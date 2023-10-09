@@ -14,7 +14,8 @@
 "margin-right": 8,
 
 "modules-left": [
-	"wlr/workspaces", 
+	//"wlr/workspaces",
+	"hyprland/workspaces", 
 	"cpu", 
 	"temperature", 
 	"memory",
@@ -23,7 +24,8 @@
 	],
   
 "modules-center": [
-	"custom/menu", 
+	"custom/menu",
+	"idle_inhibitor", 
 	"clock",
 	//"custom/cycle_wall",	
 	"custom/lock",	

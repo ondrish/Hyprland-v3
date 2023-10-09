@@ -22,7 +22,9 @@ you can also watch on the youtube link for a short show case [`Youtube Link`](ht
 - d.) Auto close of inactive apps (by default pavucontrol)
 - e.) Added emoji selector (super alt e) thanks to @U-L-M-S
 - f.) Added quick editor of configs using nano (super e)
-- g.) removal of micro in lieu of mousepad for opening of help file (super h) 
+- g.) removal of micro in lieu of mousepad for opening of help file (super h)
+- i.) Added nvtop (for monitoring gpu resources usage) - right click on cpu temp on waybar
+- j.) Added wlsunset, however, disabled by default. Thanks to @yamanmucahit . Edit ~/.config/hypr/configs/Execs.conf to enable.
 
 
 ### Arch-Hyprland install script
@@ -54,10 +56,10 @@ you can also watch on the youtube link for a short show case [`Youtube Link`](ht
 ### Packages that will be installed when using the install script:
 - yay or paru (will be asked if not installed)
 - NVIDIA GPU (nvidia-dkms, hyprland-nvidia-git nvidia-settings nvidia-utils libva libva-nvidia-driver-git)
-- foot swaybg swaylock-effects wofi wlogout mako grim slurp wl-clipboard cliphist swappy polkit-kde-agent nwg-look-bin swww mousepad pipewire-alsa playerctl
-- qt5ct btop jq gvfs gvfs-mtp ffmpegthumbs mpv python-requests pamixer brightnessctl xdg-user-dirs viewnior mpv network-manager-applet micro cava pavucontrol
-- otf-font-awesome ttf-jetbrains-mono-nerd ttf-jetbrains-mono otf-font-awesome-4 ttf-droid ttf-fantasque-sans-mono adobe-source-code-pro-fonts
-- waybar-hyprland-git
+- foot swaybg swaylock-effects wofi wlogout mako grim slurp wl-clipboard cliphist swappy polkit-kde-agent nwg-look-bin swww mousepad pipewire-alsa playerctl wlsunset
+- qt5ct btop nvtop jq gvfs gvfs-mtp ffmpegthumbs python-requests pamixer brightnessctl xdg-user-dirs viewnior mpv network-manager-applet micro cava pavucontrol
+- otf-font-awesome ttf-jetbrains-mono-nerd ttf-jetbrains-mono otf-font-awesome-4 ttf-droid ttf-fantasque-sans-mono adobe-source-code-pro-fonts noto-fonts-emoji
+- waybar
 
 ### Additional Wallpapers
 - More wallpapers can be downloaded from my Hyprland-v2.1 [`Link`](https://github.com/JaKooLit/Hyprland-v2.1/tree/main/wallpapers). Download and copy over to ~/Pictures/
@@ -74,8 +76,8 @@ you can also watch on the youtube link for a short show case [`Youtube Link`](ht
 - clone this repo by using git. Change directory, make executable and run the script
 - git clone https://github.com/JaKooLit/Hyprland-v3 
 - cd Hyprland-v3 
-- chmod +× install-Hyprland-v3 
-- ./install-Hyprland-v3
+- chmod +x install-hyprland-v3 
+- ./install-hyprland-v3
 
 - Optional stuff you can do using the script includes choices of the following:
 -   a.) you can choose either yay or paru (if they are not installed)

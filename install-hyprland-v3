@@ -252,7 +252,24 @@ else
             printf "\n"  
             fi
     
-	# Blacklist nouveau
+    # additional for GRUB users
+    # Check if /etc/default/grub exists
+    if [ -f /etc/default/grub ]; then
+        # Check if nvidia_drm.modeset=1 is already present
+            if ! sudo grep -q "nvidia_drm.modeset=1" /etc/default/grub; then
+            # Add nvidia_drm.modeset=1 to GRUB_CMDLINE_LINUX_DEFAULT
+            sudo sed -i 's/\(GRUB_CMDLINE_LINUX_DEFAULT=".*\)"/\1 nvidia_drm.modeset=1"/' /etc/default/grub
+            # Regenerate GRUB configuration
+            sudo grub-mkconfig -o /boot/grub/grub.cfg
+            echo "nvidia_drm.modeset=1 added to /etc/default/grub"
+        else
+            echo "nvidia_drm.modeset=1 is already present in /etc/default/grub"
+        fi
+        else
+        echo "/etc/default/grub does not exist"
+    fi
+	
+    # Blacklist nouveau
 	read -n1 -rep "${CAT} Would you like to blacklist nouveau? (y/n)" response
 	echo
 	if [[ $response =~ ^[Yy]$ ]]; then
@@ -292,7 +309,7 @@ for PKG1 in foot swaybg swayidle swaylock-effects wofi wlogout mako grim slurp w
     fi
 done
 
-for PKG2 in qt5ct btop jq gvfs gvfs-mtp ffmpegthumbs mpv python-requests pamixer brightnessctl xdg-user-dirs viewnior network-manager-applet nano cava pavucontrol; do
+for PKG2 in qt5ct btop nvtop jq gvfs gvfs-mtp ffmpegthumbs mpv python-requests pamixer wlsunset brightnessctl xdg-user-dirs viewnior network-manager-applet nano cava pavucontrol; do
     install_package  "$PKG2" 2>&1 | tee -a "$LOG"
     if [ $? -ne 0 ]; then
         echo -e "\e[1A\e[K${ERROR} - $PKG2 install had failed, please check the install.log"
@@ -347,7 +364,7 @@ if [[ $theme =~ ^[Yy]$ ]]; then
 			        cd ..
 			        sed -i '9,12s/#//' config/hypr/scripts/DarkLight.sh
 			        sed -i '9,12s/#//' config/hypr/scripts/DarkLight-swaybg.sh
-            		sed -i '23s/#//' config/hypr/hyprland.conf
+            		sed -i '39s/#//' config/hypr/hyprland.conf
             		cp -f 'config/hypr/waybar/style/dark-styles/style-dark-cat.css' 'config/hypr/waybar/style/style-dark.css'
             		break
             		;;
@@ -362,7 +379,7 @@ if [[ $theme =~ ^[Yy]$ ]]; then
             		done
 			        sed -i '15,18s/#//' config/hypr/scripts/DarkLight.sh
 			        sed -i '15,18s/#//' config/hypr/scripts/DarkLight-swaybg.sh
-            		sed -i '24s/#//' config/hypr/hyprland.conf
+            		sed -i '40s/#//' config/hypr/hyprland.conf
             		cp -f 'config/hypr/waybar/style/dark-styles/style-dark-mojave.css' 'config/hypr/waybar/style/style-dark.css'
             		break
          		;;
@@ -552,35 +569,6 @@ if [[ $XDPH =~ ^[Yy]$ ]]; then
         exit 1
         fi
     done
-    
-    printf "${NOTE} Checking for other other XDG-Desktop-Portal-Implementations....\n"
-    sleep 1
-    printf "\n"
-    printf "${NOTE} XDG-desktop-portal-KDE (if installed) should be manually disabled or removed! I cant remove it... sorry...\n"
-    read -n1 -rep "${CAT} Would you like me to try to remove other XDG-Desktop-Portal-Implementations? (y/n)" XDPH1
-    sleep 1
-    if [[ $XDPH1 =~ ^[Yy]$ ]]; then
-        # Clean out other portals
-    printf "${NOTE} Clearing any other xdg-desktop-portal implementations...\n"
-        # Check if packages are installed and uninstall if present
-    if pacman -Qs xdg-desktop-portal-gnome > /dev/null ; then
-        echo "Removing xdg-desktop-portal-gnome..."
-        sudo pacman -R --noconfirm xdg-desktop-portal-gnome 2>&1 | tee -a "$LOG"
-    fi
-    if pacman -Qs xdg-desktop-portal-gtk > /dev/null ; then
-        echo "Removing xdg-desktop-portal-gtk..."
-        sudo pacman -R --noconfirm xdg-desktop-portal-gtk 2>&1 | tee -a "$LOG"
-    fi
-    if pacman -Qs xdg-desktop-portal-wlr > /dev/null ; then
-        echo "Removing xdg-desktop-portal-wlr..."
-        sudo pacman -R --noconfirm xdg-desktop-portal-wlr 2>&1 | tee -a "$LOG"
-    fi
-    if pacman -Qs xdg-desktop-portal-lxqt > /dev/null ; then
-        echo "Removing xdg-desktop-portal-lxqt..."
-        sudo pacman -R --noconfirm xdg-desktop-portal-lxqt 2>&1 | tee -a "$LOG"
-    fi    
-    print_success " All other XDG-DESKTOP-PORTAL implementations cleared."
-    fi
 else
   printf "${NOTE} XDPH will not be installed..\n"
 fi
@@ -672,7 +660,7 @@ read -n1 -rep "${CAT} Would you like to copy config and wallpaper files? (y,n)" 
 if [[ $CFG =~ ^[Yy]$ ]]; then
 
 # check for existing config folders and backup 
-    for DIR in btop cava foot hypr mako swappy swaylock waybar wlogout wofi 
+    for DIR in cava foot hypr mako swappy swaylock waybar wlogout wofi 
     do 
         DIRPATH=~/.config/$DIR
         if [ -d "$DIRPATH" ]; then 
@@ -704,6 +692,10 @@ if [[ $CFG =~ ^[Yy]$ ]]; then
     cp -r config/swappy ~/.config/ || { echo "Error: Failed to copy swappy config files."; exit 1; } 2>&1 | tee -a "$LOG"
     mkdir -p ~/Pictures/wallpapers
     cp -r wallpapers ~/Pictures/ && { echo "Copy completed!"; } || { echo "Error: Failed to copy wallpapers."; exit 1; } 2>&1 | tee -a "$LOG"
+
+    # symlinks for waybar
+    ln -sf "$HOME/.config/hypr/waybar/configs/config-default" "$HOME/.config/hypr/waybar/config" && \
+    ln -sf "$HOME/.config/hypr/waybar/style/dark-styles/style-dark-cat.css" "$HOME/.config/hypr/waybar/style.css" && \
 
     # Set some files as executable 
     chmod +x ~/.config/hypr/scripts/* 2>&1 | tee -a "$LOG"
